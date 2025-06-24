@@ -1,0 +1,154 @@
+<!-- public/hr.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR View - Job Applications</title>
+    <style>
+        /* CSS is included in the HTML file as requested */
+        :root {
+            --primary-blue: #0d6efd;
+            --light-gray: #f8f9fa;
+            --dark-gray: #343a40;
+            --white: #ffffff;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--light-gray);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--dark-gray);
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        #jobs-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .job-card {
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s;
+        }
+
+        .job-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .job-card h2 {
+            margin-top: 0;
+            color: var(--primary-blue);
+        }
+        
+        .job-card .location {
+            font-style: italic;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .job-card p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .job-card strong {
+            color: var(--dark-gray);
+        }
+
+        .job-card .description {
+             white-space: pre-wrap; /* Preserves whitespace and newlines */
+             color: #495057;
+        }
+        
+        .job-footer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Posted Job Applications</h1>
+        <div id="jobs-list">
+            <p>Loading jobs...</p>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript is included in the HTML file as requested
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchJobs();
+        });
+
+        async function fetchJobs() {
+            const jobsListContainer = document.getElementById('jobs-list');
+            
+            try {
+                const response = await fetch('http://localhost:3000/api/jobs');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch jobs.');
+                }
+                const jobs = await response.json();
+
+                // Clear the 'Loading...' message
+                jobsListContainer.innerHTML = '';
+
+                if (jobs.length === 0) {
+                    jobsListContainer.innerHTML = '<p>No jobs have been posted yet.</p>';
+                    return;
+                }
+
+                // Create and append a card for each job
+                jobs.forEach(job => {
+                    const jobCard = document.createElement('div');
+                    jobCard.className = 'job-card';
+
+                    jobCard.innerHTML = `
+                        <h2>${job.job_title}</h2>
+                        <p class="location">${job.location}</p>
+                        <p class="description">${job.job_description}</p>
+                        <p><strong>Required Skills:</strong> ${job.required_skills}</p>
+                        <p><strong>Experience:</strong> ${job.required_experience}</p>
+                        <p><strong>Salary:</strong> ${job.salary_range}</p>
+                        <div class="job-footer">
+                           <span><strong>Job Type:</strong> ${job.job_type}</span>
+                           <span><strong>Apply by:</strong> ${job.application_deadline}</span>
+                        </div>
+                    `;
+                    jobsListContainer.appendChild(jobCard);
+                });
+
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+                jobsListContainer.innerHTML = '<p style="color: red;">Could not load jobs. Please check the console for errors.</p>';
+            }
+        }
+    </script>
+
+</body>
+</html>
