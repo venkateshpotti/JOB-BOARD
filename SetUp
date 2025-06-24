@@ -1,6 +1,6 @@
 To run this we need 
                 job-board/
-                ├── 📂 public/
+                ├── 📂 public/   
                     ├── 📜 hr.html
                     ├── 📜 index.html
                 ├── 📜 server.js
